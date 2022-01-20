@@ -1,12 +1,12 @@
-33c3a47e73dbef3cd9dbfe48d73caff3 *DESCRIPTION
+22d5e677238a9c06a4136cf5ee9b9a15 *DESCRIPTION
 0b5098ef2bc92f157ecf89183a73ea57 *NAMESPACE
-7ad86b66d3af590695548b058b30b0fa *NEWS.md
+d6c0feb24609d3b67a85232fcdcc1f42 *NEWS.md
 0b921c7c3b8e364c2644ab7e828d1628 *R/clinicaltrials_gov_dates.R
 96b770e9cf9c2b8c902a5256a0a9121a *R/clinicaltrials_gov_download.R
 c835390ba44323a08c918b9fd290a8b8 *R/clinicaltrials_gov_version.R
 59896a51a9238255099a3158edf2ea04 *R/drks_de_dates.R
 8f1fe9cead712afd1d198fd10250004e *R/drks_de_download.R
-5e526dda74106756ec7b1c853c6c6d93 *R/drks_de_version.R
+8a846d4f7297f7eaa66436f6b9a27c93 *R/drks_de_version.R
 33ea72c9b72ae32336fb63849b21fd9a *README.md
 51dd252091c8b6c69ef5d28369ac6479 *man/clinicaltrials_gov_dates.Rd
 190824d32f260d2f82a7c2eb27e27a24 *man/clinicaltrials_gov_download.Rd
