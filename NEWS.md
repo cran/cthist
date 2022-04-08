@@ -1,3 +1,26 @@
+# cthist 1.0.0
+
+* Re-implemented functions that access ClinicalTrials.gov or DRKS.de
+  with the `polite` R package to ensure that the sites' rules
+  regarding scraping are observed, and to limit the number of requests
+* Fix bug where non-English locale prevents correct parsing of month
+  names
+* Improvements to error-catching during download
+* New columns indicating the precision of dates in the original data
+  source
+* All functions now check that input is well-formed before executing
+  and provide informative errors otherwise
+* `clinicaltrials_gov_download()` and `drks_de_download()` now return
+  a data frame of results if `output_filename` is not specified
+* `clinicaltrials_gov_version()` and `drks_de_version()` now return
+  named lists rather than vectors
+* Added default version numbers to `clinicaltrials_gov_version()` and
+  `drks_de_version()`
+* More extensive unit testing
+* Fix bug in retrieving "gender based" in `clinicaltrials_gov_version()`
+* Add "quiet" downloading option
+* Improved documentation
+
 # cthist 0.1.4
 
 * Fix DRKS bug where post-completion records sometimes contain more

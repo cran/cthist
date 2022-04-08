@@ -4,7 +4,11 @@
 #'     e.g. "DRKS00005219". (A capitalized "DRKS" followed by eight
 #'     numerals with no spaces or hyphens.)
 #'
-#' @param versionno An integer version number, e.g. 1
+#' @param versionno An integer version number, e.g. 3, where 1 is the
+#'     earliest version of the trial in question, 2, is the next most
+#'     recent, etc. If 0 is supplied, the most recent version will be
+#'     returned. If no version number is specified, the first version
+#'     will be downloaded.
 #'
 #' @return A list containing the overall status, enrolment, start
 #'     date, primary completion date, primary completion date type,
@@ -22,7 +26,7 @@
 #' version <- drks_de_version("DRKS00005219", 1)
 #' }
 #'
-drks_de_version <- function(drksid, versionno) {
+drks_de_version <- function(drksid, versionno=1) {
 
     ## The DRKS site appears to internally assign version
     ## numbers that are integer multiples of 2, starting
@@ -35,6 +39,21 @@ drks_de_version <- function(drksid, versionno) {
     versionno <- versionno * 2
 
     out <- tryCatch({
+
+        ## Check that TRN is well-formed
+        if (! grepl("^DRKS\\d{8}$", drksid)) {
+            stop(paste0("'", drksid, "' is not a well-formed TRN"))
+        }
+
+        ## Check that version number is numeric
+        if (! is.numeric(versionno)) {
+            stop(paste0("'", versionno, "' is not a number"))
+        }
+
+        ## Check that version number is a whole number
+        if (versionno %% 1 != 0) {
+            stop(paste0("'", versionno, "' is not a whole number"))
+        }
 
         if (versionno != 0) {
 
@@ -70,26 +89,29 @@ drks_de_version <- function(drksid, versionno) {
 
         }
 
-        res <- httr::POST(
-            "https://drks.de/drks_web/compareTrialVersions.do",
-            body = version_query,
-            encode = "form"
+        session <- polite::bow(
+                    "https://drks.de/drks_web/compareTrialVersions.do"
+                           )
 
-        )
+        version <- polite::scrape(session, query=version_query)
 
-        version <- rvest::read_html(res)
-
-        closeAllConnections()
+        ## Back up locale info
+        lct <- Sys.getlocale("LC_TIME")
+        ## Set locale so that months are parsed correctly on
+        ## non-English computers
+        Sys.setlocale("LC_TIME", "C")
 
         ## Read the recruitment status
 
         rstatus <- NA
         rstatus <- version %>%
             rvest::html_nodes("li.state") %>%
-            rvest::html_text()
+            rvest::html_text2() %>%
+            trimws() %>%
+            stringr::str_extract("Recruitment Status: ([A-Za-z, -]+)")
 
-        rstatus <- substr(rstatus, 23, nchar(rstatus))
-
+        rstatus <- sub("Recruitment Status: ([A-Za-z, -]+)", "\\1", rstatus)
+        
         ## Read the enrolment
 
         enrolno <- NA
@@ -101,9 +123,11 @@ drks_de_version <- function(drksid, versionno) {
         enroltype <- NA
         enroltype <- version %>%
             rvest::html_nodes("li.running") %>%
-            rvest::html_text()
+            rvest::html_text2() %>%
+            trimws() %>%
+            stringr::str_extract("Planned/Actual: ([A-Za-z]+)")
 
-        enroltype <- substr(enroltype, 19, nchar(enroltype))
+        enroltype <- sub("Planned/Actual: ([A-Za-z]+)", "\\1", enroltype)
 
         ## Read the start date
 
@@ -146,23 +170,29 @@ drks_de_version <- function(drksid, versionno) {
         min_age <- version %>%
             rvest::html_node("li.minAge") %>%
             rvest::html_text2() %>%
-            gsub(pattern = "Minimum Age:", replacement = "", .data) %>%
-            trimws()
+            trimws() %>%
+            stringr::str_extract("Minimum Age: ([A-Za-z0-9 ]+)")
+
+        min_age <- sub("Minimum Age: ([A-Za-z0-9 ]+)", "\\1", min_age)
 
         max_age <- NA
         max_age <- version %>%
             rvest::html_node("li.maxAge") %>%
             rvest::html_text2() %>%
-            gsub(pattern = "Maximum Age:", replacement = "", .data) %>%
-            trimws()
+            trimws() %>%
+            stringr::str_extract("Maximum Age: ([A-Za-z0-9 ]+)")
 
+        max_age <- sub("Maximum Age: ([A-Za-z0-9 ]+)", "\\1", max_age)
+        
         gender <- NA
         gender <- version %>%
             rvest::html_node("li.gender") %>%
             rvest::html_text2() %>%
-            gsub(pattern = "Gender:", replacement = "", .data) %>%
-            trimws()
+            trimws() %>%
+            stringr::str_extract("Gender: ([A-Za-z, ]+)")
 
+        gender <- sub("Gender: ([A-Za-z, ]+)", "\\1", gender)
+        
         inclusion_criteria <- NA
         inclusion_criteria <- version %>%
             rvest::html_nodes(".inclusionAdd") %>%
@@ -279,21 +309,24 @@ drks_de_version <- function(drksid, versionno) {
 
         ## Now, put all these data points together
 
-        data <- c(
-            rstatus,
-            startdate,
-            closingdate,
-            enrolno,
-            enroltype,
-            min_age,
-            max_age,
-            gender,
-            inclusion_criteria,
-            exclusion_criteria,
-            primaryoutcomes,
-            secondaryoutcomes,
-            contacts
+        data <- list(
+            rstatus = rstatus,
+            startdate = startdate,
+            closingdate = closingdate,
+            enrolno = enrolno,
+            enroltype = enroltype,
+            min_age = min_age,
+            max_age = max_age,
+            gender = gender,
+            inclusion_criteria = inclusion_criteria,
+            exclusion_criteria = exclusion_criteria,
+            primaryoutcomes = primaryoutcomes,
+            secondaryoutcomes = secondaryoutcomes,
+            contacts = contacts
         )
+
+        ## Restore original locale info
+        Sys.setlocale("LC_TIME", lct)
 
         return(data)
 

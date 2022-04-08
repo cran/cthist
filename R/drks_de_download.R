@@ -1,17 +1,38 @@
 #' Mass-download registry entry historical versions from DRKS.de
 #'
+#' This function will download all DRKS.de registry records for the
+#' TRNs specified. Rather than transcribing TRNs by hand, it is
+#' recommended that you conduct a search for trials of interest using
+#' the DRKS.de web front-end and download the result as a
+#' comma-separated value (CSV) file. The download option labeled "CSV"
+#' on DRKS.de currently produces a zipped semicolon-delimited file,
+#' which must be unzipped before reading. The file can be read in to
+#' memory as a data frame and the `drksId` column can be passed
+#' directly to the function as the `drksids` argument.
+#'
 #' @param drksids A list of well-formed DRKS numbers,
 #'     e.g. c("DRKS00005219", "DRKS00003170").
 #'
 #' @param output_filename A character string for a filename into which
 #'     the dataframe will be written as a CSV,
-#'     e.g. "historical_versions.csv".
+#'     e.g. "historical_versions.csv". If no output filename is
+#'     provided, the data frame of downloaded historical versions will
+#'     be returned by the function as a data frame.
 #'
-#' @return On successful completion, returns TRUE, otherwise returns
-#'     FALSE. If the function is called again with the same DRKS
-#'     numbers and output filename, it will check the output file for
-#'     errors in the download, remove them and try to download the
-#'     historical versions again.
+#' @param quiet A boolean TRUE or FALSE. If TRUE, no messages will be
+#'     printed during download. FALSE by default, messages printed for
+#'     every version downloaded showing progress.
+#'
+#' @return If an output filename is specified, on successful
+#'     completion, this function returns TRUE and otherwise returns
+#'     FALSE. If an output filename is not specified, on successful
+#'     completion, this function returns a data frame containing the
+#'     historical versions of the clinical trial that have been
+#'     retrieved, and in case of error returns FALSE. After
+#'     unsuccessful completion, if the function is called again with
+#'     the same NCT numbers and output filename, it will check the
+#'     output file for errors in the download, remove them and try to
+#'     download the historical versions again.
 #'
 #' @export
 #'
@@ -24,31 +45,48 @@
 #' filename <- tempfile()
 #' drks_de_download(c("DRKS00005219", "DRKS00003170"), filename)
 #' }
-#' 
-drks_de_download <- function(drksids, output_filename) {
+#'
+#' \dontrun{
+#' hv <- drks_de_download("DRKS00005219")
+#' }
+drks_de_download <- function(drksids, output_filename=NA, quiet=FALSE) {
 
-    output_cols <- "ciiccDDiccccccccc"
+    ## If output_filename is not specified, write to tempfile() and
+    ## return this invisibly rather than TRUE
+    if (is.na (output_filename)) {
+        output_filename <- tempfile()
+        return_dataframe <- TRUE
+    } else {
+        return_dataframe <- FALSE
+    }
+
+    ## Check that all TRNs are well-formed
+    if (sum(grepl("^DRKS\\d{8}$", drksids)) != length(drksids)) {
+        stop("Input contains TRNs that are not well-formed")
+    }
+
+    output_cols <- "ciiDcDDiccccccccc"
 
     if (!file.exists(output_filename)) {
 
-        tibble::tribble(
-                    ~drksid,
-                    ~version_number,
-                    ~total_versions,
-                    ~version_date,
-                    ~recruitment_status,
-                    ~start_date,
-                    ~closing_date,
-                    ~enrolment,
-                    ~enrolment_type,
-                    ~min_age,
-                    ~max_age,
-                    ~gender,
-                    ~inclusion_criteria,
-                    ~exclusion_criteria,
-                    ~primary_outcomes,
-                    ~secondary_outcomes,
-                    ~contacts
+        tibble::tibble(
+                    drksid = character(),
+                    version_number = numeric(),
+                    total_versions = numeric(),
+                    version_date = date(),
+                    recruitment_status = character(),
+                    start_date = date(),
+                    closing_date = date(),
+                    enrolment = numeric(),
+                    enrolment_type = character(),
+                    min_age = character(),
+                    max_age = character(),
+                    gender = character(),
+                    inclusion_criteria = character(),
+                    exclusion_criteria = character(),
+                    primary_outcomes = character(),
+                    secondary_outcomes = character(),
+                    contacts = character()
                 ) %>%
             readr::write_csv(
                        file = output_filename,
@@ -67,8 +105,9 @@ drks_de_download <- function(drksids, output_filename) {
 
         error_trns <- check %>%
             dplyr::filter(
-                       as.character(.data$version_date) == "Error" |
-                       as.character(.data$recruitment_status) == "Error"
+                     as.character(.data$version_date) == "Error" |
+                   as.character(.data$recruitment_status) == "Error" |
+                     is.na(.data$recruitment_status)
                    ) %>%
             dplyr::group_by(drksid) %>%
             dplyr::slice_head() %>%
@@ -117,25 +156,34 @@ drks_de_download <- function(drksids, output_filename) {
         versionno <- 1
         for (version in versions) {
 
-            if (versionno == length(versions)) {
-                versiondata <- drks_de_version(drksid, 0)
-            } else {
-                versiondata <- drks_de_version(drksid, versionno)
+            ## Repeat attempts to download a version up to 10 times in
+            ## case of error
+            versiondata <- NA
+            version_retry <- 0
+
+            while (
+                (is.na(versiondata[1]) |
+                versiondata[1] == "Error") &
+                version_retry < 10
+            ) {
+
+                if (version_retry > 0 & ! quiet) {
+                    message("Trying again ...")
+                }
+
+                if (versionno == length(versions)) {
+                    versiondata <- drks_de_version(drksid, 0)
+                } else {
+                    versiondata <- drks_de_version(drksid, versionno)
+                }
+
+                version_retry <- version_retry + 1
+                
             }
 
-            rstatus <- versiondata[1]
-            startdate <- versiondata[2]
-            closingdate <- versiondata[3]
-            enrolno <- versiondata[4]
-            enroltype <- versiondata[5]
-            min_age <- versiondata[6]
-            max_age <- versiondata[7]
-            gender <- versiondata[8]
-            inclusion_criteria <- versiondata[9]
-            exclusion_criteria <- versiondata[10]
-            primaryoutcomes <- versiondata[11]
-            secondaryoutcomes <- versiondata[12]
-            contacts <- versiondata[13]
+            if (version_retry > 1 & ! quiet) {
+                message("Recovered from error successfully")
+            }
 
             tibble::tribble(
                        ~drksid,
@@ -159,23 +207,25 @@ drks_de_download <- function(drksids, output_filename) {
                        versionno,
                        length(versions),
                        version,
-                       rstatus,
-                       startdate,
-                       closingdate,
-                       enrolno,
-                       enroltype,
-                       min_age,
-                       max_age,
-                       gender,
-                       inclusion_criteria,
-                       exclusion_criteria,
-                       primaryoutcomes,
-                       secondaryoutcomes,
-                       contacts
+                       versiondata$rstatus,
+                       versiondata$startdate,
+                       versiondata$closingdate,
+                       versiondata$enrolno,
+                       versiondata$enroltype,
+                       versiondata$min_age,
+                       versiondata$max_age,
+                       versiondata$gender,
+                       versiondata$inclusion_criteria,
+                       versiondata$exclusion_criteria,
+                       versiondata$primaryoutcomes,
+                       versiondata$secondaryoutcomes,
+                       versiondata$contacts
                    ) %>%
-                readr::write_csv(file = output_filename, append = TRUE)
+                readr::write_csv(
+                           file = output_filename, append = TRUE
+                       )
 
-            if (length(versions) > 10) {
+            if (length(versions) > 2 & ! quiet) {
                 message(paste0(
                     drksid,
                     " - ",
@@ -201,18 +251,22 @@ drks_de_download <- function(drksids, output_filename) {
 
         progress <- format(100 * numer / denom, digits = 2)
 
-        message(
-            paste0(
-                Sys.time(),
-                " ",
-                drksid,
-                " processed (",
-                length(versions),
-                " versions ",
-                progress,
-                "%)"
+        if (! quiet) {
+            
+            message(
+                paste0(
+                    Sys.time(),
+                    " ",
+                    drksid,
+                    " processed (",
+                    length(versions),
+                    " versions ",
+                    progress,
+                    "%)"
+                )
             )
-        )
+            
+        }
 
     }
 
@@ -225,7 +279,8 @@ drks_de_download <- function(drksids, output_filename) {
     error_trns <- check %>%
         dplyr::filter(
                    as.character(.data$version_date) == "Error" |
-                   as.character(.data$recruitment_status) == "Error"
+                   as.character(.data$recruitment_status) == "Error" |
+                   is.na(.data$recruitment_status)
                ) %>%
         dplyr::group_by(drksid) %>%
         dplyr::slice_head() %>%
@@ -245,7 +300,14 @@ drks_de_download <- function(drksids, output_filename) {
     all_dl_complete <- incomplete_dl_n == 0
 
     if (no_errors & all_dl_complete) {
-        return(TRUE)
+
+        if (return_dataframe) {
+            readr::read_csv(output_filename) %>%
+                return()
+        } else {
+            return(TRUE)
+        }
+        
     } else {
         if (errors_n > 0) {
             message(

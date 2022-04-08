@@ -48,7 +48,17 @@ version_data[2]
 ## [1] "22 [Anticipated]"
 ```
 
-Mass-download clinical trial registry entry versions for many trials:
+Mass-download clinical trial registry entry versions:
+
+```{r}
+## Download all data for all versions of NCT02110043 and store in
+## variable `versions`
+
+versions <- clinicaltrials_gov_download("NCT02110043")
+```
+
+Mass-download clinical trial registry entry versions for many trials
+and save to disk:
 
 ```{r}
 ## Download all data for all versions of NCT02110043 and NCT03281616
@@ -80,7 +90,17 @@ version_data[4]
 ## [1] "60"
 ```
 
-Mass-download clinical trial registry entry versions for many trials:
+Mass-download clinical trial registry entry versions:
+
+```{r}
+## Download all data for all versions of DRKS00005219 and store in
+## variable `versions`
+
+versions <- drks_de_download("DRKS00005219")
+```
+
+Mass-download clinical trial registry entry versions for many trials
+and save to disk:
 
 ```{r}
 ## Download all data for all versions of DRKS00005219 and DRKS00003170
@@ -116,12 +136,13 @@ of the license.
 
 ```
 @Manual{bgcarlisle-cthist,
-  Title          = {cthist},
-  Author         = {Carlisle, Benjamin Gregory},
-  Organization   = {The Grey Literature},
-  Address        = {Berlin, Germany},
-  url            = {https://github.org/bgcarlisle/cthist},
-  year           = 2020
+  title          = {Analysis of Clinical Trial Registry Entry Histories Using the Novel {{R}} Package cthist},
+  author         = {Carlisle, Benjamin Gregory},
+  date           = {2022-01-21},
+  publisher      = {{medRxiv}},
+  doi            = {10.1101/2022.01.20.22269538},
+  url            = {https://www.medrxiv.org/content/10.1101/2022.01.20.22269538v1},
+  year           = 2022
 }
 ```
 
