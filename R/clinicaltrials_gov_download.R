@@ -52,9 +52,12 @@
 #' \dontrun{
 #' hv <- clinicaltrials_gov_download("NCT00942747")
 #' }
-clinicaltrials_gov_download <-
-    function(nctids, output_filename=NA, quiet=FALSE) {
-
+clinicaltrials_gov_download <- function(
+                                        nctids,
+                                        output_filename=NA,
+                                        quiet=FALSE
+                                        ) {
+    
     ## If output_filename is not specified, write to tempfile() and
     ## return this invisibly rather than TRUE
     if (is.na (output_filename)) {
@@ -68,8 +71,14 @@ clinicaltrials_gov_download <-
     if (sum(grepl("^NCT\\d{8}$", nctids)) != length(nctids)) {
         stop("Input contains TRNs that are not well-formed")
     }
-
-    output_cols <- "ciiDcDcDccicccccccccc"
+        
+    ## Check that the site is reachable
+    if (! RCurl::url.exists("https://clinicaltrials.gov")) {
+        message("Unable to connect to clinicaltrials.gov")
+        return (FALSE)
+    }
+    
+    output_cols <- "ciiDcDcDcciccccccccccc"
 
     if (!file.exists(output_filename)) {
 
@@ -94,7 +103,8 @@ clinicaltrials_gov_download <-
             criteria = character(),
             outcome_measures = character(),
             contacts = character(),
-            sponsor_collaborators = character()
+            sponsor_collaborators = character(),
+            whystopped = character()
         ) %>%
             readr::write_csv(
                        file = output_filename,
@@ -117,8 +127,7 @@ clinicaltrials_gov_download <-
         error_ncts <- check %>%
             dplyr::filter(
                        as.character(.data$version_date) == "Error" |
-                       as.character(.data$overall_status) == "Error" |
-                       is.na(.data$overall_status)
+                       as.character(.data$overall_status) == "Error"
                    ) %>%
             dplyr::group_by(nctid) %>%
             dplyr::slice_head() %>%
@@ -221,6 +230,7 @@ clinicaltrials_gov_download <-
                 ~outcome_measures,
                 ~contacts,
                 ~sponsor_collaborators,
+                ~whystopped,
                 nctid,
                 versionno,
                 length(versions),
@@ -241,7 +251,8 @@ clinicaltrials_gov_download <-
                 versiondata$criteria,
                 versiondata$om_data,
                 versiondata$contacts_data,
-                versiondata$sponsor_data
+                versiondata$sponsor_data,
+                versiondata$whystopped
             ) %>%
                 readr::write_csv(
                            file = output_filename, append = TRUE
@@ -302,7 +313,6 @@ clinicaltrials_gov_download <-
         dplyr::filter(
                    as.character(.data$version_date) == "Error"
                    | as.character(.data$overall_status) == "Error"
-                   | is.na(.data$overall_status)
                ) %>%
         dplyr::group_by(nctid) %>%
         dplyr::slice_head() %>%

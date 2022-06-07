@@ -64,7 +64,13 @@ drks_de_download <- function(drksids, output_filename=NA, quiet=FALSE) {
     if (sum(grepl("^DRKS\\d{8}$", drksids)) != length(drksids)) {
         stop("Input contains TRNs that are not well-formed")
     }
-
+   
+    ## Check that the site is reachable
+    if (! RCurl::url.exists("https://drks.de")) {
+        message("Unable to connect to drks.de")
+        return (FALSE)
+    }
+    
     output_cols <- "ciiDcDDiccccccccc"
 
     if (!file.exists(output_filename)) {
@@ -106,8 +112,7 @@ drks_de_download <- function(drksids, output_filename=NA, quiet=FALSE) {
         error_trns <- check %>%
             dplyr::filter(
                      as.character(.data$version_date) == "Error" |
-                   as.character(.data$recruitment_status) == "Error" |
-                     is.na(.data$recruitment_status)
+                   as.character(.data$recruitment_status) == "Error"
                    ) %>%
             dplyr::group_by(drksid) %>%
             dplyr::slice_head() %>%
@@ -279,8 +284,7 @@ drks_de_download <- function(drksids, output_filename=NA, quiet=FALSE) {
     error_trns <- check %>%
         dplyr::filter(
                    as.character(.data$version_date) == "Error" |
-                   as.character(.data$recruitment_status) == "Error" |
-                   is.na(.data$recruitment_status)
+                   as.character(.data$recruitment_status) == "Error"
                ) %>%
         dplyr::group_by(drksid) %>%
         dplyr::slice_head() %>%

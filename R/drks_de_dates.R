@@ -27,6 +27,12 @@ drks_de_dates <- function(drksid) {
         if (! grepl("^DRKS\\d{8}$", drksid)) {
             stop(paste0("'", drksid, "' is not a well-formed TRN"))
         }
+   
+        ## Check that the site is reachable
+        if (! RCurl::url.exists("https://clinicaltrials.gov")) {
+            message("Unable to connect to clinicaltrials.gov")
+            return ("Error")
+        }
 
         url <- paste0(
             "https://drks.de/drks_web/navigate.do?",
@@ -63,14 +69,23 @@ drks_de_dates <- function(drksid) {
 
     },
     error = function(cond) {
-        message(paste("Error downloading DRKS ID:", drksid))
+        message(
+            paste(
+                "Error downloading version dates for DRKS ID", drksid
+            )
+        )
         message("Here's the original error message:")
         message(paste(cond, "\n"))
         ## Choose a return value in case of error
         return("Error")
     },
     warning = function(cond) {
-        message(paste("DRKS ID caused a warning:", drksid))
+        message(
+            paste(
+                "Warning while downloading version dates for DRKS ID",
+                drksid
+            )
+        )
         message("Here's the original warning message:")
         message(paste(cond, "\n"))
         ## Choose a return value in case of warning
