@@ -4,7 +4,7 @@
 \alias{clinicaltrials_gov_version}
 \title{Download a registry entry version from ClinicalTrials.gov}
 \usage{
-clinicaltrials_gov_version(nctid, versionno = 1)
+clinicaltrials_gov_version(nctid, versionno = 1, polite = TRUE)
 }
 \arguments{
 \item{nctid}{A character string including a well-formed
@@ -16,6 +16,10 @@ hyphens.)}
 earliest version of the trial in question, 2 is the next most
 recent, etc. If no version number is specified, the first
 version will be downloaded.}
+
+\item{polite}{If TRUE, this function uses the \code{polite} package to
+download data, if FALSE, this function uses the \code{rvest}
+package, default TRUE.}
 }
 \value{
 A list containing the overall status, enrolment, start
@@ -23,14 +27,16 @@ date, start date precision (month or day) primary completion
 date, primary completion date precision (month or day), primary
 completion date type, minimum age, maximum age, sex,
 gender-based, accepts healthy volunteers, inclusion/exclusion
-criteria, outcome measures, contacts and sponsors
+criteria, outcome measures, contacts, sponsors, reason why the
+trial stopped (if provided), whether results are posted, and
+references data
 }
 \description{
 Download a registry entry version from ClinicalTrials.gov
 }
 \examples{
 
-\dontrun{
+\donttest{
 version <- clinicaltrials_gov_version("NCT00942747", 1)
 }
 

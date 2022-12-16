@@ -18,6 +18,10 @@
 #'     provided, the data frame of downloaded historical versions will
 #'     be returned by the function as a data frame.
 #'
+#' @param polite If TRUE, this function uses the `polite` package to
+#'     download data, if FALSE, this function uses the `rvest`
+#'     package, default TRUE.
+#'
 #' @param quiet A boolean TRUE or FALSE. If TRUE, no messages will be
 #'     printed during download. FALSE by default, messages printed for
 #'     every version downloaded showing progress.
@@ -43,18 +47,19 @@
 #'
 #' @examples
 #'
-#' \dontrun{
+#' \donttest{
 #' filename <- tempfile()
 #' clinicaltrials_gov_download(c("NCT00942747",
 #'     "NCT03281616"), filename)
 #' }
 #'
-#' \dontrun{
+#' \donttest{
 #' hv <- clinicaltrials_gov_download("NCT00942747")
 #' }
 clinicaltrials_gov_download <- function(
                                         nctids,
                                         output_filename=NA,
+                                        polite=TRUE,
                                         quiet=FALSE
                                         ) {
     
@@ -78,7 +83,7 @@ clinicaltrials_gov_download <- function(
         return (FALSE)
     }
     
-    output_cols <- "ciiDcDcDcciccccccccccc"
+    output_cols <- "ciiDcDcDcciccccccccccccc"
 
     if (!file.exists(output_filename)) {
 
@@ -104,7 +109,9 @@ clinicaltrials_gov_download <- function(
             outcome_measures = character(),
             contacts = character(),
             sponsor_collaborators = character(),
-            whystopped = character()
+            whystopped = character(),
+            results_posted = character(),
+            references = character()
         ) %>%
             readr::write_csv(
                        file = output_filename,
@@ -138,7 +145,7 @@ clinicaltrials_gov_download <- function(
         ## Find incompletely downloaded NCT's
         dl_counts <- check %>%
             dplyr::count(nctid) %>%
-            dplyr::rename(dl_versions = .data$n)
+            dplyr::rename(dl_versions = "n")
 
         check <- check %>%
             dplyr::left_join(dl_counts, by = "nctid")
@@ -170,7 +177,11 @@ clinicaltrials_gov_download <- function(
 
         nctid <- to_dl$nctid[1]
 
-        versions <- clinicaltrials_gov_dates(nctid)
+        versions <- clinicaltrials_gov_dates(
+            nctid,
+            FALSE,
+            polite
+        )
 
         versionno <- 1
         for (version in versions) {
@@ -191,7 +202,7 @@ clinicaltrials_gov_download <- function(
                 }
 
                 versiondata <- clinicaltrials_gov_version(
-                    nctid, versionno
+                    nctid, versionno, polite
                 )
                 
                 version_retry <- version_retry + 1
@@ -231,6 +242,8 @@ clinicaltrials_gov_download <- function(
                 ~contacts,
                 ~sponsor_collaborators,
                 ~whystopped,
+                ~results_posted,
+                ~references,
                 nctid,
                 versionno,
                 length(versions),
@@ -252,7 +265,9 @@ clinicaltrials_gov_download <- function(
                 versiondata$om_data,
                 versiondata$contacts_data,
                 versiondata$sponsor_data,
-                versiondata$whystopped
+                versiondata$whystopped,
+                versiondata$results_posted,
+                versiondata$references
             ) %>%
                 readr::write_csv(
                            file = output_filename, append = TRUE
@@ -323,7 +338,7 @@ clinicaltrials_gov_download <- function(
 
     dl_counts <- check %>%
         dplyr::count(nctid) %>%
-        dplyr::rename(dl_versions = .data$n)
+        dplyr::rename(dl_versions = "n")
 
     check <- check %>%
         dplyr::left_join(dl_counts, by = "nctid")

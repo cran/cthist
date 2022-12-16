@@ -10,12 +10,18 @@
 #'     recent, etc. If no version number is specified, the first
 #'     version will be downloaded.
 #'
+#' @param polite If TRUE, this function uses the `polite` package to
+#'     download data, if FALSE, this function uses the `rvest`
+#'     package, default TRUE.
+#'
 #' @return A list containing the overall status, enrolment, start
 #'     date, start date precision (month or day) primary completion
 #'     date, primary completion date precision (month or day), primary
 #'     completion date type, minimum age, maximum age, sex,
 #'     gender-based, accepts healthy volunteers, inclusion/exclusion
-#'     criteria, outcome measures, contacts and sponsors
+#'     criteria, outcome measures, contacts, sponsors, reason why the
+#'     trial stopped (if provided), whether results are posted, and
+#'     references data
 #'
 #' @export
 #'
@@ -23,11 +29,15 @@
 #'
 #' @examples
 #'
-#' \dontrun{
+#' \donttest{
 #' version <- clinicaltrials_gov_version("NCT00942747", 1)
 #' }
 #'
-clinicaltrials_gov_version <- function(nctid, versionno=1) {
+clinicaltrials_gov_version <- function(
+                                       nctid,
+                                       versionno=1,
+                                       polite=TRUE
+                                       ) {
 
     out <- tryCatch({
 
@@ -59,7 +69,11 @@ clinicaltrials_gov_version <- function(nctid, versionno=1) {
             versionno
         )
 
-        version <- polite_read_html(url)
+        if (polite) {
+            version <- polite_read_html(url)
+        } else {
+            version <- rvest::read_html(url)
+        }
 
         ## Back up locale info
         lct <- Sys.getlocale("LC_TIME")
@@ -533,6 +547,116 @@ clinicaltrials_gov_version <- function(nctid, versionno=1) {
 
         sponsor_data <- sponsor_data %>%
             jsonlite::toJSON()
+
+        ## Check for the presence of study results
+
+        study_results_section_heading <- version %>%
+            rvest::html_nodes(
+            xpath='//*[@id="Results"]/../div[@class="sectionDivider"]'
+            )
+
+        results_posted <- FALSE
+        
+        if (length(study_results_section_heading) > 0) {
+            if (rvest::html_text2(study_results_section_heading) ==
+                "Study Results"
+                ) {
+                results_posted <- TRUE
+            }
+            
+        }
+
+        ## Read References
+
+        ref_rows <- version %>%
+            rvest::html_nodes("#ReferencesBody tr")
+
+        references_data <- tibble::tribble(
+                                       ~label,
+                                       ~content,
+                                       ~doi,
+                                       ~pmid,
+                                       ~type
+                                   )
+
+        ref_label <- NA
+        ref_content <- NA
+        ref_doi <- NA
+        ref_pmid <- NA
+        ref_type <- NA
+
+        for (ref_row in ref_rows) {
+            
+            ref_row_cells <- ref_row %>%
+                rvest::html_nodes("td")
+
+            if (length(ref_row_cells) > 0) {
+
+                if (rvest::html_text(ref_row_cells[1]) != "") {
+                    ## First cell isn't empty
+
+                    ref_label <- ref_row_cells[1] %>%
+                        rvest::html_text2() %>%
+                        trimws()
+                    
+                }
+
+                ref_content <- ref_row_cells[2] %>%
+                    rvest::html_text2() %>%
+                    trimws()
+
+                if (ref_label == "Citations:" & ref_content != "") {
+                    ## If we're looking at citations
+                    ref_doi <- stringr::str_match(
+                        ref_content,
+                        "doi: ([^\\s]+)\\. "
+                    )[2]
+
+                    ref_pmid <- stringr::str_match(
+                        ref_content,
+                        "PubMed ([0-9]+)$"
+                    )[2]
+
+                    ref_type <- stringr::str_match(
+                        ref_content,
+                        "^\\[([A-Za-z ]+)\\] "
+                    )[2]
+                    
+                } else {
+                    ref_doi <- NA
+                    ref_pmid <- NA
+                    ref_type <- NA
+                }
+
+                if (ref_content != "") {
+                    references_data <- references_data %>%
+                        dplyr::bind_rows(
+                                   tibble::tribble(
+                                               ~label,
+                                               ~content,
+                                               ~doi,
+                                               ~pmid,
+                                               ~type,
+                                               ref_label,
+                                               ref_content,
+                                               ref_doi,
+                                               ref_pmid,
+                                               ref_type
+                                           )
+                               )
+                }
+
+                
+            }
+            
+        }
+
+        if (nrow(references_data) > 0) {
+            references_data <- references_data %>%
+                jsonlite::toJSON()
+        } else {
+            references_data <- NA
+        }
         
         ## Now, put all these data points together
 
@@ -553,7 +677,9 @@ clinicaltrials_gov_version <- function(nctid, versionno=1) {
             om_data = om_data,
             contacts_data = contacts_data,
             sponsor_data = sponsor_data,
-            whystopped = whystopped
+            whystopped = whystopped,
+            results_posted = results_posted,
+            references = references_data
         )
 
         ## Restore original locale info

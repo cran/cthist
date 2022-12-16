@@ -1,3 +1,24 @@
+# cthist 1.4.0
+
+* Removed drks.de-related functions
+* Added `polite` variable to allow disabling of "polite" downloading
+  for debugging purposes
+* Removed deprecated `.data$n` syntax
+
+---
+
+# cthist 1.3.0
+
+* Added "results posted" (indicates whether study results have been
+  posted)
+* Added "references" to `clinicaltrials_gov_version()` (citations,
+  links and available IPD/Information) and `drks_de_version()` (Trial
+  Publications, Results and other Documents)
+  
+---
+
+---
+
 # cthist 1.2.1
 
 * Implemented checks in `clinicaltrials_gov_download()` and
@@ -7,8 +28,6 @@
 ---
 
 # cthist 1.2.0
-
----
 
 * Added `status_change_only` option to `clinicaltrials_gov_dates()`
   function to allow for downloading only the dates on which a trial's
@@ -25,8 +44,6 @@
 ---
 
 # cthist 1.0.1
-
----
 
 * Fix bug where `cthist` does not capture outcome measures in versions
   posted after results are posted.
@@ -66,8 +83,6 @@
 ---
 
 # cthist 0.1.3
-
----
 
 * Fix DRKS bug where multiple contact affiliation nodes caused
   download to produce an error
