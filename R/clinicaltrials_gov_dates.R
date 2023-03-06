@@ -9,10 +9,6 @@
 #' @param status_change_only If TRUE, returns only the dates marked
 #'     with a Recruitment Status change, default FALSE.
 #'
-#' @param polite If TRUE, this function uses the `polite` package to
-#'     download data, if FALSE, this function uses the `rvest`
-#'     package, default TRUE.
-#'
 #' @return A character vector of ISO-8601 formatted dates
 #'     corresponding to the dates on which there were clinical trial
 #'     history version updates.
@@ -29,8 +25,7 @@
 #'
 clinicaltrials_gov_dates <- function(
                                      nctid,
-                                     status_change_only=FALSE,
-                                     polite=TRUE
+                                     status_change_only=FALSE
                                      ) {
     out <- tryCatch({
 
@@ -47,7 +42,7 @@ clinicaltrials_gov_dates <- function(
         assertthat::assert_that(is.logical(status_change_only))
    
         ## Check that the site is reachable
-        if (! RCurl::url.exists("https://clinicaltrials.gov")) {
+        if (httr::http_error("https://clinicaltrials.gov")) {
             message("Unable to connect to clinicaltrials.gov")
             return ("Error")
         }
@@ -57,12 +52,7 @@ clinicaltrials_gov_dates <- function(
             nctid
         )
 
-        if (polite) {
-            session <- polite::bow(url)    
-            index <- polite::scrape(session)
-        } else {
-            index <- rvest::read_html(url)
-        }
+        index <- rvest::read_html(url)
 
         ## Back up locale info
         lct <- Sys.getlocale("LC_TIME")

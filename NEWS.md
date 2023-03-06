@@ -1,3 +1,13 @@
+# cthist 1.4.1
+
+* Fixed bug where `cthist` sometimes can't connect to
+  ClinicalTrials.gov by replacing the statement that included
+  `RCurl::url.exists()` with one that uses `httr::http_error()`
+  instead
+* Removed `polite` dependency and functionality
+
+---
+
 # cthist 1.4.0
 
 * Removed drks.de-related functions
@@ -15,8 +25,6 @@
   links and available IPD/Information) and `drks_de_version()` (Trial
   Publications, Results and other Documents)
   
----
-
 ---
 
 # cthist 1.2.1
