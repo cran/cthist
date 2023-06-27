@@ -1,6 +1,6 @@
 Package: cthist
 Title: Clinical Trial Registry History
-Version: 1.4.1
+Version: 1.4.2
 Authors@R: 
     person("Benjamin Gregory", "Carlisle", , "murph@bgcarlisle.com", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0001-8975-0649"))
@@ -18,9 +18,9 @@ Config/testthat/edition: 3
 Encoding: UTF-8
 RoxygenNote: 7.2.3
 NeedsCompilation: no
-Packaged: 2023-03-06 19:35:33 UTC; bgcarlisle
+Packaged: 2023-06-27 12:09:04 UTC; bgcarlisle
 Author: Benjamin Gregory Carlisle [aut, cre]
     (<https://orcid.org/0000-0001-8975-0649>)
 Maintainer: Benjamin Gregory Carlisle <murph@bgcarlisle.com>
 Repository: CRAN
-Date/Publication: 2023-03-06 20:10:02 UTC
+Date/Publication: 2023-06-27 12:30:02 UTC
