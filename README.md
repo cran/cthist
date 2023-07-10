@@ -101,13 +101,26 @@ clinicaltrials_gov_download(c("NCT02110043", "NCT03281616"), "versions.csv")
 * Primary completion date
 * Enrolment
 * Enrolment type
-* Outcome measures
 * Inclusion and exclusion criteria
-* Contacts
-* Sponsors
+* Outcome measures
+* Overall contacts
+* Cetral contacts
+* Responsible party
+* Lead sponsor
+* Collaborators
 * "Why stopped?"
 * Results reported
 * References
+* Organization study ID
+* Secondary IDs
+
+## Note regarding ClinicalTrials.gov July 2023 website re-write
+
+For `cthist` v >= 2.0.0, the method for downloading has been updated
+to reflect the new version of ClinicalTrials.gov. Because the data on
+the updated website are presented differently from the way they were
+scraped from the old version, there will be some changes. E.g. the
+overall status field is now in all-caps.
 
 ## DRKS.de
 

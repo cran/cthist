@@ -17,8 +17,11 @@
 #'     date, primary completion date precision (month or day), primary
 #'     completion date type, minimum age, maximum age, sex, accepts
 #'     healthy volunteers, inclusion/exclusion criteria, outcome
-#'     measures, contacts, sponsors, reason why the trial stopped (if
-#'     provided), whether results are posted, and references data
+#'     measures, overall contacts, central contacts, responsible
+#'     party, lead sponsor, collaborators, reason why the trial
+#'     stopped (if provided), whether results are posted, references
+#'     data, organization indentifiers and other secondary trial
+#'     identifiers.
 #'
 #' @export
 #'
@@ -53,7 +56,7 @@ clinicaltrials_gov_version <- function(
         }
    
         ## Check that the site is reachable
-        if (httr::http_error("https://classic.clinicaltrials.gov")) {
+        if (httr::http_error("https://clinicaltrials.gov")) {
             message("Unable to connect to clinicaltrials.gov")
             return ("Error")
         }
@@ -238,6 +241,16 @@ clinicaltrials_gov_version <- function(
         references_data <- prot$referencesModule$references %>%
             tibble::tibble() %>%
             jsonlite::toJSON()
+
+        ## Read secondary identifiers
+
+        orgstudyid <- NA
+        orgstudyid <- prot$identificationModule$orgStudyIdInfo$id
+
+        secondaryids <- NA
+        secondaryids <- prot$identificationModule$secondaryIdInfos %>%
+            tibble::tibble() %>%
+            jsonlite::toJSON()
         
         ## Now, put all these data points together
 
@@ -263,7 +276,9 @@ clinicaltrials_gov_version <- function(
             collaborators = collaborators,
             whystopped = whystopped,
             results_posted = results_posted,
-            references = references_data
+            references = references_data,
+            orgstudyid = orgstudyid,
+            secondaryids = secondaryids
         )
 
         return(data)

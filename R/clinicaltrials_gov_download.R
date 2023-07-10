@@ -73,12 +73,12 @@ clinicaltrials_gov_download <- function(
     }
         
     ## Check that the site is reachable
-    if (httr::http_error("https://classic.clinicaltrials.gov")) {
+    if (httr::http_error("https://clinicaltrials.gov")) {
         message("Unable to connect to clinicaltrials.gov")
         return (FALSE)
     }
     
-    output_cols <- "ciiDcDcDccicccccccccccccc"
+    output_cols <- "ciiDcDcDcciccccccccccccccccc"
 
     if (!file.exists(output_filename)) {
 
@@ -108,7 +108,9 @@ clinicaltrials_gov_download <- function(
             collaborators = character(),
             whystopped = character(),
             results_posted = character(),
-            references = character()
+            references = character(),
+            orgstudyid = character(),
+            secondaryids = character(),
         ) %>%
             readr::write_csv(
                        file = output_filename,
@@ -237,6 +239,8 @@ clinicaltrials_gov_download <- function(
                 ~whystopped,
                 ~results_posted,
                 ~references,
+                ~orgstudyid,
+                ~secondaryids,
                 nctid,
                 versionno,
                 length(versions),
@@ -262,12 +266,13 @@ clinicaltrials_gov_download <- function(
                 versiondata$collaborators,
                 versiondata$whystopped,
                 versiondata$results_posted,
-                versiondata$references
+                versiondata$references,
+                versiondata$orgstudyid,
+                versiondata$secondaryids
             ) %>%
                 readr::write_csv(
                            file = output_filename, append = TRUE
                        )
-
 
             if (length(versions) > 2 & ! quiet) {
                 message(
