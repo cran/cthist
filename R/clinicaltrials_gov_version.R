@@ -10,7 +10,8 @@
 #'     recent, etc. (Please note that this differs from the convention
 #'     used in cthist v. <= 1.4.2, in which 1 is the earliest version
 #'     of the trial in question.) If no version number is specified,
-#'     the first version will be downloaded.
+#'     the first version will be downloaded. If -1 (negative one) is
+#'     specified, the latest version will be downloaded.
 #'
 #' @return A list containing the overall status, enrolment, start
 #'     date, start date precision (month or day) primary completion
@@ -60,6 +61,12 @@ clinicaltrials_gov_version <- function(
             message("Unable to connect to clinicaltrials.gov")
             return ("Error")
         }
+
+        ## Get the version number if versionno is -1 (latest)
+        if (versionno == -1) {
+            dates <- clinicaltrials_gov_dates(nctid)
+            versionno <- max(dates$version)
+        }
         
         url <- paste0(
             "https://clinicaltrials.gov/api/int/studies/",
@@ -99,13 +106,15 @@ clinicaltrials_gov_version <- function(
         startdate <- NA
         startdate_precision <- NA
 
-        startdate <- prot$statusModule$startDateStruct$date
+        startdate_raw <- prot$statusModule$startDateStruct$date
 
-        if (stringr::str_length(startdate) == 10) {
-            startdate_precision <- "day"
-        } else {
-            startdate_precision <- "month"
-            startdate <- paste0(startdate, "-01")
+        if (! is.null(startdate_raw)) {
+            if (stringr::str_length(startdate_raw) == 10) {
+                startdate_precision <- "day"
+            } else {
+                startdate_precision <- "month"
+                startdate <- paste0(startdate_raw, "-01")
+            }
         }
 
         ## Read the primary completion date
@@ -116,16 +125,17 @@ clinicaltrials_gov_version <- function(
         pcdate_precision <- NA
         pcdate_type <- NA
 
-        pcdate <- pcdate_raw$date
 
-        if (stringr::str_length(pcdate) == 10) {
-            pcdate_precision <- "day"
-        } else {
-            pcdate_precision <- "month"
-            pcdate <- paste0(pcdate, "-01")
+        if (! is.null(pcdate_raw$date)) {
+            pcdate <- pcdate_raw$date
+            if (stringr::str_length(pcdate) == 10) {
+                pcdate_precision <- "day"
+            } else {
+                pcdate_precision <- "month"
+                pcdate <- paste0(pcdate, "-01")
+            }
+            pcdate_type <- pcdate_raw$type
         }
-
-        pcdate_type <- pcdate_raw$type
         
         ## Read the eligibility criteria
 

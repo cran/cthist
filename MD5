@@ -1,15 +1,15 @@
-2160ded5de720c228c07201ddbcffee7 *DESCRIPTION
+77343f8150b5b1acf8c6b8231f7a0a4b *DESCRIPTION
 fb62e6bd65a83308b271bc7cf1c799d8 *NAMESPACE
-8051554ad6b52f637966bee856b50e57 *NEWS.md
-2db3d656b36260b9e9e9efa579527d25 *R/clinicaltrials_gov_dates.R
+fd554c96e463b1ffdb8d27eb3cee427d *NEWS.md
+6bb2a25254eb529cd5daaca1bfec37b4 *R/clinicaltrials_gov_dates.R
 b234005ebb7e39526539047da0a01b52 *R/clinicaltrials_gov_download.R
-8848ca501a88dc03a71af17de9cc367a *R/clinicaltrials_gov_version.R
+f7c24bb805563fa1cdc28f2739a7d392 *R/clinicaltrials_gov_version.R
 dc7fff682d13ec67073e2a9b67e0f58b *R/cthist-package.R
 ec43cdeb4d26f53a610e6d6b3e6b996d *README.md
 7080893e02c49cd296d4424b9be55069 *build/partial.rdb
-471600decf17d88a3d869745f90ada62 *man/clinicaltrials_gov_dates.Rd
+772bb85bbbb6179b57e1d33a2f3f548f *man/clinicaltrials_gov_dates.Rd
 277c44b879f50d6344462cd50cf6eaee *man/clinicaltrials_gov_download.Rd
-0ebf82a07716da4bfd46a410f7334966 *man/clinicaltrials_gov_version.Rd
+d2b7359dfca8049dc6f819402707df1a *man/clinicaltrials_gov_version.Rd
 796af42304c0f4e36a176582a21c0fab *man/cthist-package.Rd
 88b49378127cf812ff73249b68eabd25 *tests/testthat.R
 8cc49d532d991c13eb0f6d272ec6cc11 *tests/testthat/test-clinicaltrials_gov_dates.R
@@ -19,6 +19,7 @@ eb0b0cdf291bcf45c8dfa338b0168c67 *tests/testthat/test-clinicaltrials_gov_downloa
 ce299aa601b7fcefae1a0b2f6603396b *tests/testthat/test-clinicaltrials_gov_version_criteria.R
 b098e5ffaefc766146eb474d73bb7ab8 *tests/testthat/test-clinicaltrials_gov_version_enrol.R
 dea6d29e058e24a6d01caa28708936d8 *tests/testthat/test-clinicaltrials_gov_version_enroltype.R
+c117bdfdc2fc34bbf1522464c0011d72 *tests/testthat/test-clinicaltrials_gov_version_latest.R
 299b55b7e890353f55760d1a905d0ad4 *tests/testthat/test-clinicaltrials_gov_version_lead_sponsor.R
 3168769a3fed6f509c0952648d27d6bf *tests/testthat/test-clinicaltrials_gov_version_max_age.R
 8c11b5aaadf31e4a00b2a6407c02f300 *tests/testthat/test-clinicaltrials_gov_version_min_age.R
@@ -27,6 +28,7 @@ dea6d29e058e24a6d01caa28708936d8 *tests/testthat/test-clinicaltrials_gov_version
 fe4af639f2b3890a5deb825218c1a656 *tests/testthat/test-clinicaltrials_gov_version_ostatus.R
 344173da4136a9a5a67dca5375b7f2f4 *tests/testthat/test-clinicaltrials_gov_version_overall_contacts.R
 029469a36422d19d7214765a9865ec23 *tests/testthat/test-clinicaltrials_gov_version_pcdate.R
+2b33249989dc6036619d8551c0429388 *tests/testthat/test-clinicaltrials_gov_version_pcdate_none.R
 92e72a6634b1f53fef9c9561822e24d5 *tests/testthat/test-clinicaltrials_gov_version_pcdate_precision.R
 869eacc2f0f7590521fa0c3bb7e225ee *tests/testthat/test-clinicaltrials_gov_version_pcdate_type.R
 4694bf8000f7254882bc510aad55fc84 *tests/testthat/test-clinicaltrials_gov_version_references.R
@@ -35,5 +37,6 @@ d759aa113340d85674e1409cdd6e85e3 *tests/testthat/test-clinicaltrials_gov_version
 a175abca03a622534c600b96cd0aa664 *tests/testthat/test-clinicaltrials_gov_version_secondaryids.R
 34637fe9835d9ac2894e7fbaa464fff1 *tests/testthat/test-clinicaltrials_gov_version_sex.R
 fb0c403a638e5b8b8d244b8765621d87 *tests/testthat/test-clinicaltrials_gov_version_startdate.R
+12b500f8e0876ea748a0b7853e2e4ee2 *tests/testthat/test-clinicaltrials_gov_version_startdate_none.R
 f8b5b694e383439c34242e03fa8cb965 *tests/testthat/test-clinicaltrials_gov_version_startdate_precision.R
 dfc1e72ad2820753ede702b317a7b86a *tests/testthat/test-clinicaltrials_gov_version_volunteers.R
