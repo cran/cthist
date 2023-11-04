@@ -1,9 +1,9 @@
-77343f8150b5b1acf8c6b8231f7a0a4b *DESCRIPTION
+9d2d7790367a10083fb226de9c350f20 *DESCRIPTION
 fb62e6bd65a83308b271bc7cf1c799d8 *NAMESPACE
-fd554c96e463b1ffdb8d27eb3cee427d *NEWS.md
+1e5a2fe79df0f08469fb2c57b7ed5c6b *NEWS.md
 6bb2a25254eb529cd5daaca1bfec37b4 *R/clinicaltrials_gov_dates.R
 b234005ebb7e39526539047da0a01b52 *R/clinicaltrials_gov_download.R
-f7c24bb805563fa1cdc28f2739a7d392 *R/clinicaltrials_gov_version.R
+f12d6b29d5b053554458fdecc1002d5d *R/clinicaltrials_gov_version.R
 dc7fff682d13ec67073e2a9b67e0f58b *R/cthist-package.R
 ec43cdeb4d26f53a610e6d6b3e6b996d *README.md
 7080893e02c49cd296d4424b9be55069 *build/partial.rdb
