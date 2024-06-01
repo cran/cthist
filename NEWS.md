@@ -1,3 +1,22 @@
+# cthist 2.1.9
+
+* Added `locations` data download
+
+---
+
+# cthist 2.1.8
+
+* Added proper citation information linking to the PLOS ONE paper
+
+---
+
+# cthist 2.1.7
+
+* Added new function `extract_publications` to extract publications by
+  type from a data frame of downloaded versions into a new data frame.
+
+---
+
 # cthist 2.1.6
 
 * Fixed bug where download will throw an error in cases where a record
