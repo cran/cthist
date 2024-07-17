@@ -21,7 +21,7 @@
 #'     measures, overall contacts, central contacts, responsible
 #'     party, lead sponsor, collaborators, locations, reason why the
 #'     trial stopped (if provided), whether results are posted,
-#'     references data, organization indentifiers and other secondary
+#'     references data, organization identifiers and other secondary
 #'     trial identifiers.
 #'
 #' @export
@@ -65,7 +65,7 @@ clinicaltrials_gov_version <- function(
         ## Get the version number if versionno is -1 (latest)
         if (versionno == -1) {
             dates <- clinicaltrials_gov_dates(nctid)
-            versionno <- max(dates$version)
+            versionno <- max(dates$version_number)
         }
         
         url <- paste0(
