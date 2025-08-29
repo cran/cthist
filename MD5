@@ -1,6 +1,6 @@
-810a7b0b85502680fbf85f0524d9d1d5 *DESCRIPTION
+5a3878785b4d55a7e8cc9ac83a5041c7 *DESCRIPTION
 f417c0f474f0d9ee698fe2d8257fd0b1 *NAMESPACE
-b3a0f6fd3229340b876e79da3ada24de *NEWS.md
+d4023b51c926bd73da453c1df5b912d5 *NEWS.md
 4da90723a315ce6d4fe0cc15df249477 *R/clinicaltrials_gov_dates.R
 85ee0d83daf9b52dde21961b0b3a9d86 *R/clinicaltrials_gov_download.R
 c868973d0f2d5efe22229d6c877254b1 *R/clinicaltrials_gov_version.R
@@ -8,7 +8,7 @@ bcbc8172beea45266eeb9a5c964da2f9 *R/cthist-package.R
 08a2eec5c4a064bbc47fc88df3bfd0e9 *R/extract_publications.R
 cc7f400054d6f0a46dfadd39e74536b6 *R/overall_status_lengths.R
 228bda6721d1f59cbc72a71541173f33 *README.md
-aa5e5a2cbfaea3d9b6cdbe378ac48cee *build/partial.rdb
+1bf18d9c216b8d95033f0bd2fe2906b2 *build/partial.rdb
 5b9213109104b70e61244d8e36a11c48 *inst/CITATION
 42abe9abc282f70a07e225abb2c4b452 *man/clinicaltrials_gov_dates.Rd
 4741bf4a90f29f01800d804560e0061a *man/clinicaltrials_gov_download.Rd
@@ -23,7 +23,7 @@ eb0b0cdf291bcf45c8dfa338b0168c67 *tests/testthat/test-clinicaltrials_gov_downloa
 88dd8ff1a909f0809d92de803e750e11 *tests/testthat/test-clinicaltrials_gov_locations.R
 3883a2d9c313c43a7b7242d08d8b8643 *tests/testthat/test-clinicaltrials_gov_version.R
 881b365c82d1c2db19b59deac26c5059 *tests/testthat/test-clinicaltrials_gov_version_central_contacts.R
-ce299aa601b7fcefae1a0b2f6603396b *tests/testthat/test-clinicaltrials_gov_version_criteria.R
+e454cc1964cb5565280d47d6fbb02538 *tests/testthat/test-clinicaltrials_gov_version_criteria.R
 b098e5ffaefc766146eb474d73bb7ab8 *tests/testthat/test-clinicaltrials_gov_version_enrol.R
 dea6d29e058e24a6d01caa28708936d8 *tests/testthat/test-clinicaltrials_gov_version_enroltype.R
 d8f36e157bef937750c33fc0a68893ac *tests/testthat/test-clinicaltrials_gov_version_latest.R
@@ -48,4 +48,4 @@ fb0c403a638e5b8b8d244b8765621d87 *tests/testthat/test-clinicaltrials_gov_version
 f8b5b694e383439c34242e03fa8cb965 *tests/testthat/test-clinicaltrials_gov_version_startdate_precision.R
 dfc1e72ad2820753ede702b317a7b86a *tests/testthat/test-clinicaltrials_gov_version_volunteers.R
 9431e2f3692c86cb221360ebd848e21f *tests/testthat/test-extract_publications.R
-a9c004b73ff1f277fee8d22349ddffbc *tests/testthat/test-overall_status_lengths.R
+fe794711e652fe199e533e3b50846e22 *tests/testthat/test-overall_status_lengths.R
